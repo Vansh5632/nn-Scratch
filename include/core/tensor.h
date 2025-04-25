@@ -1,57 +1,71 @@
-#pragma once 
+#pragma once
 #ifndef TENSOR_H
+#define TENSOR_H
+
 #include <cstdint>
 #include <memory>
 #include <vector>
 
-namespace torchscratch::core::tensor{
-    class TensorImpl;
-    class DType;
+namespace torchscratch {
+namespace core {
+namespace tensor {
 
-    class Tensor{
-        Tensor() = default;
+class TensorImpl;
+class DType;
 
-        explicit Tensor(const std::vector<int64_t>& shape,DType* dtype = nullptr);
+class Tensor {
+public:
+  Tensor() = default;
 
-        Tensor(void* data,const std::vector<int64_t>& shape,DType* dtype = nullptr);
+  explicit Tensor(const std::vector<int64_t>& shape, DType* dtype = nullptr);
 
-        Tensor(const Tensor& other);
-        Tensor(Tensor&& other) noexcept;
+  Tensor(void* data, const std::vector<int64_t>& shape, DType* dtype = nullptr);
 
-        Tensor& operator = (const Tensor& other);
-        Tensor& operator = (Tensor&& other) noexcept;
+  Tensor(const Tensor& other);
+  Tensor(Tensor&& other) noexcept;
 
-        ~Tensor();
+  Tensor& operator=(const Tensor& other);
+  Tensor& operator=(Tensor&& other) noexcept;
 
-        const std::vector<int64_t>& shape() const;
-        const std::vector<int64_t>& strides() const;
+  ~Tensor();
 
-        int64_t dim() const;
-        int64_t numel() const;
+  const std::vector<int64_t>& shape() const;
+  const std::vector<int64_t>& strides() const;
 
-        void* data_ptr() const;
-        template<typename T>
-        T* data_ptr() const;
+  int64_t dim() const;
+  int64_t numel() const;
 
-        bool is_cuda() const{return false;}
-        void allocate();
-        void deallocate();
+  void* data_ptr() const;
+  template <typename T>
+  T* data_ptr() const;
 
-        Tensor reshape(const std::vector<int64_t>& new_shape) const;
-        Tensor clone() const;
+  static bool is_cuda() { return false; }
+  void allocate();
+  void deallocate();
 
-        bool is_contiguous() const;
+  Tensor reshape(const std::vector<int64_t>& new_shape) const;
+  Tensor clone() const;
 
-        private:
-        std::unique_ptr<TensorImpl> impl_;
+  bool is_contiguous() const;
 
-    };
-    class DType{
-        public:
-            virtual ~DType() = default;
+private:
+  std::unique_ptr<TensorImpl> impl_;
+};
 
-    };
+class DType {
+public:
+  virtual ~DType() = default;
 
-}
+  // Rule of 5: Implement copy/move operations
+  DType() = default;
+  DType(const DType&) = default;
+  DType& operator=(const DType&) = default;
+  DType(DType&&) noexcept = default;
+  DType& operator=(DType&&) noexcept = default;
+};
 
-#endif // TENSOR_H
+}  // namespace tensor
+}  // namespace core
+}  // namespace torchscratch
+
+#endif  // TENSOR_H

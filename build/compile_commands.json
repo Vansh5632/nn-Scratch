@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/vansh5632/sudo/nn/build",
+  "command": "/usr/bin/c++  -I/home/vansh5632/sudo/nn -I/home/vansh5632/sudo/nn/include -std=c++14 -Wall -Wextra -Werror -Wno-unused-parameter -o CMakeFiles/torchscratch.dir/include/core/tensor.cpp.o -c /home/vansh5632/sudo/nn/include/core/tensor.cpp",
+  "file": "/home/vansh5632/sudo/nn/include/core/tensor.cpp",
+  "output": "CMakeFiles/torchscratch.dir/include/core/tensor.cpp.o"
+}
+]

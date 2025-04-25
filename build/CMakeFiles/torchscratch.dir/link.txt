@@ -1,0 +1,2 @@
+/usr/bin/ar qc libtorchscratch.a CMakeFiles/torchscratch.dir/include/core/tensor.cpp.o
+/usr/bin/ranlib libtorchscratch.a

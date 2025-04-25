@@ -1,0 +1,58 @@
+name: C++ Lint
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '.clang-format'
+      - '.clang-tidy'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '.clang-format'
+      - '.clang-tidy'
+      - 'cmake/**'
+      - 'CMakeLists.txt'
+
+jobs:
+  format-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format
+    
+    - name: Check C++ formatting
+      run: |
+        find include src -type f \( -name "*.h" -o -name "*.cpp" \) | grep -v "third_party" | xargs clang-format -style=file -i --dry-run --Werror
+
+  lint-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-tidy cppcheck
+    
+    - name: Configure CMake
+      run: |
+        cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    
+    - name: Run clang-tidy
+      run: |
+        find include src -type f \( -name "*.h" -o -name "*.cpp" \) | grep -v "third_party" | xargs clang-tidy -p build
+    
+    - name: Run cppcheck
+      run: |
+        cppcheck --enable=all --inconclusive --std=c++14 --suppress=missingInclude --quiet -I include include/ src/
