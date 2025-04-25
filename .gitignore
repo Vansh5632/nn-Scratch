@@ -1,0 +1,107 @@
+# Build directories
+/build/
+/cmake-build-*/
+/out/
+
+# Compilation database
+compile_commands.json
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+*.sublime-*
+.vs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+.python-version
+
+# C++ compiled files
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+
+# Generated documentation
+/docs/_build/
+/html/
+/latex/
+
+# Dependency directories
+/third_party/build/
+/third_party/downloads/
+
+# Logs and debugging
+*.log
+*.dSYM/
+gmon.out
+core
+core.*
+
+# Installation artifacts
+install_manifest.txt
+
+# Test artifacts
+Testing/
+googletest-*/
+
+# Auto-generated files
+/include/config.h
+/version.h
+
+# Cache directories
+.cache/
+.clangd/
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+CMakeSettings.json
+
+# Linting and formatting backups
+*.orig
+*.bak
+*~
