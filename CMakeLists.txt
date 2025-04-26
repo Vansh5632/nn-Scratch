@@ -31,12 +31,12 @@ set(HEADERS
 
 # Include directories
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+
+    ${CMAKE_SOURCE_DIR}/include
 )
 
 # Create library target
-add_library(torchscratch ${SOURCES} ${HEADERS})
+add_library(torchscratch src/core/tensor/tensor.cpp)
 
 # Set include directories for the target
 target_include_directories(torchscratch PUBLIC
@@ -48,7 +48,7 @@ target_include_directories(torchscratch PUBLIC
 target_compile_options(torchscratch PRIVATE
     -Wall
     -Wextra
-    -Werror
+    # -Werror
     -Wno-unused-parameter
 )
 
@@ -71,3 +71,4 @@ add_custom_target(
     COMMENT "Linting C++ code with clang-tidy and cppcheck"
     VERBATIM
 )
+include_directories(/home/vansh5632/sudo/nn/include)

@@ -1,5 +1,0 @@
-/home/vansh5632/sudo/nn/build/CMakeFiles/torchscratch.dir
-/home/vansh5632/sudo/nn/build/CMakeFiles/format.dir
-/home/vansh5632/sudo/nn/build/CMakeFiles/lint.dir
-/home/vansh5632/sudo/nn/build/CMakeFiles/edit_cache.dir
-/home/vansh5632/sudo/nn/build/CMakeFiles/rebuild_cache.dir
