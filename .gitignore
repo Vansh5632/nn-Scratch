@@ -82,6 +82,7 @@ googletest-*/
 # Auto-generated files
 /include/config.h
 /version.h
+!/include/
 
 # Cache directories
 .cache/
