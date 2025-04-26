@@ -17,21 +17,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Include static analyzer options
 include(cmake/StaticAnalyzers.cmake)
 
-# Define source files
-set(SOURCES
-    include/core/tensor.cpp
-    # Add other source files here
-)
-
 # Define header files (for IDE indexing)
 set(HEADERS
-    include/core/tensor.h
+    include/core/tensor/tensor.h
     # Add other header files here
 )
 
 # Include directories
 include_directories(
-
     ${CMAKE_SOURCE_DIR}/include
 )
 
@@ -71,4 +64,28 @@ add_custom_target(
     COMMENT "Linting C++ code with clang-tidy and cppcheck"
     VERBATIM
 )
-include_directories(/home/vansh5632/sudo/nn/include)
+
+# Download and configure Google Test
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG release-1.12.1
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+# Test executable
+set(TEST_SOURCES
+    test/cpp/tensor/test_tensor.cpp
+)
+
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test/cpp/tensor/test_tensor.cpp)
+  add_executable(test_tensor ${TEST_SOURCES})
+  target_link_libraries(test_tensor torchscratch gtest gtest_main)
+
+  # Enable testing
+  enable_testing()
+  add_test(NAME TensorTests COMMAND test_tensor)
+endif()

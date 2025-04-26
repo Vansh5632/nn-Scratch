@@ -105,3 +105,59 @@ CMakeSettings.json
 *.orig
 *.bak
 *~
+
+# Additional build artifacts
+compile_commands.json.bak
+__pycache__
+.mypy_cache/
+
+# Valgrind/profiling files
+callgrind.out.*
+cachegrind.out.*
+massif.out.*
+vgcore.*
+perf.data
+perf.data.old
+
+# Editor specific files
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+
+# Emacs
+\#*\#
+.\#*
+*~
+.dir-locals.el
+
+# QtCreator
+CMakeLists.txt.user*
+*.autosave
+
+# Visual Studio
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vcxproj.filters
+
+# Code coverage files
+*.gcda
+*.gcno
+*.gcov
+
+# Benchmark results
+benchmark_results/
+
+# Package directories
+/packages/
+
+# Dependency graphs
+*.dot
+
+# Google Test generated files
+googletest-download/
+googletest-src/
+googletest-build/
