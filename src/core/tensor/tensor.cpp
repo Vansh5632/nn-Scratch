@@ -14,33 +14,29 @@ struct TensorImpl {
   std::vector<int64_t> strides_;  // Strides (bytes between elements)
   DType* dtype_;                  // Placeholder for data type
   bool is_contiguous_;            // Contiguity flag
+  bool owns_data_;                // Ownership of data
 
   TensorImpl(const std::vector<int64_t>& shape, DType* dtype)
       : data_(nullptr),
         shape_(shape),
         strides_(compute_strides(shape)),
         dtype_(dtype),
-        is_contiguous_(true) {}
+        is_contiguous_(true),
+        owns_data_(true) {}
 
-  // Copy constructor
+  // Copy constructor - Create a shallow copy (share data pointer)
   TensorImpl(const TensorImpl& other)
-      : shape_(other.shape_),
+      : data_(other.data_),  // Share data pointer (shallow copy)
+        shape_(other.shape_),
         strides_(other.strides_),
-        dtype_(other.dtype_),  // Deep copy if dtype_ is dynamically allocated
-        is_contiguous_(other.is_contiguous_) {
-    // Deep copy of data if available
-    if (other.data_) {
-      size_t size =
-          std::accumulate(shape_.begin(), shape_.end(), int64_t(1), std::multiplies<int64_t>());
-      data_ = ::operator new(size);  // Assuming 1 byte per element
-      std::memcpy(data_, other.data_, size);
-    } else {
-      data_ = nullptr;
-    }
+        dtype_(other.dtype_),
+        is_contiguous_(other.is_contiguous_),
+        owns_data_(false) {  // Mark as non-owning
+    // No deep copy of data
   }
 
   ~TensorImpl() {
-    if (data_) {
+    if (owns_data_ && data_) {
       ::operator delete(data_);
     }
   }
@@ -54,8 +50,46 @@ struct TensorImpl {
     }
     return strides;
   }
+
+  // Helper method to get element at specified indices
+  template <typename T>
+  T& get(const std::vector<int64_t>& indices) {
+    size_t offset = 0;
+    for (size_t i = 0; i < indices.size(); ++i) {
+      offset += indices[i] * strides_[i];
+    }
+    return static_cast<T*>(data_)[offset];
+  }
+
+  template <typename T>
+  const T& get(const std::vector<int64_t>& indices) const {
+    size_t offset = 0;
+    for (size_t i = 0; i < indices.size(); ++i) {
+      offset += indices[i] * strides_[i];
+    }
+    return static_cast<const T*>(data_)[offset];
+  }
 };
 
+// Tensor methods
+void Tensor::set_data_ptr(void* data) {
+  if (impl_) {
+    impl_->data_ = data;
+    impl_->owns_data_ = false;  // When setting data externally, mark as non-owning
+  }
+}
+
+void Tensor::set_strides(const std::vector<int64_t>& strides) {
+  if (impl_) {
+    impl_->strides_ = strides;
+  }
+}
+
+void Tensor::set_contiguous(bool is_contiguous) {
+  if (impl_) {
+    impl_->is_contiguous_ = is_contiguous;
+  }
+}
 // Tensor constructors
 Tensor::Tensor(const std::vector<int64_t>& shape, DType* dtype) {
   impl_ = std::make_unique<TensorImpl>(shape, dtype);
@@ -157,9 +191,12 @@ Tensor Tensor::reshape(const std::vector<int64_t>& new_shape) const {
   if (new_numel != numel()) {
     throw std::runtime_error("Total elements must remain the same for reshape");
   }
-  Tensor result(new_shape, impl_->dtype_);
-  result.impl_->data_ = impl_->data_;    // Shallow copy of data
-  result.impl_->is_contiguous_ = false;  // Reshaped tensor may not be contiguous
+  Tensor result(new_shape);
+  result.set_data_ptr(data_ptr());  // Shallow copy of data
+  result.set_strides(
+      TensorImpl::compute_strides(new_shape));  // Reshaped tensor may not be contiguous
+  result.impl_->owns_data_ = false;             // No ownership transfer
+  result.set_contiguous(false);
   return result;
 }
 
@@ -167,9 +204,9 @@ Tensor Tensor::clone() const {
   if (!impl_) {
     return Tensor();
   }
-  Tensor result(impl_->shape_, impl_->dtype_);
+  Tensor result(shape());
   result.allocate();
-  std::memcpy(result.data_ptr(), impl_->data_, numel() * 1);
+  std::memcpy(result.data_ptr(), data_ptr(), numel() * sizeof(float));
   return result;
 }
 

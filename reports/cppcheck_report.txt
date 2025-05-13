@@ -1,0 +1,10 @@
+Checking /home/vansh5632/sudo/nn/src/core/tensor/ops.cpp ...
+1/2 files checked 35% done
+Checking /home/vansh5632/sudo/nn/src/core/tensor/tensor.cpp ...
+/home/vansh5632/sudo/nn/src/core/tensor/tensor.cpp:95:3: performance: Variable 'impl_' is assigned in constructor body. Consider performing initialization in initialization list. [useInitializationList]
+  impl_ = std::make_unique<TensorImpl>(shape, dtype);
+  ^
+/home/vansh5632/sudo/nn/src/core/tensor/tensor.cpp:99:3: performance: Variable 'impl_' is assigned in constructor body. Consider performing initialization in initialization list. [useInitializationList]
+  impl_ = std::make_unique<TensorImpl>(shape, dtype);
+  ^
+2/2 files checked 100% done

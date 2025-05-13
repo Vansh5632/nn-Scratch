@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <stdexcept>
 #include <vector>
 
 namespace torchscratch {
@@ -12,6 +13,10 @@ namespace tensor {
 
 class TensorImpl;
 class DType;
+
+// Forward declaration for the accessor class
+template <typename T>
+class TransposedTensorAccessor;
 
 class Tensor {
 public:
@@ -48,9 +53,64 @@ public:
 
   bool is_contiguous() const;
 
+  // New methods to expose TensorImpl functionality
+  void set_data_ptr(void* data);
+  void set_strides(const std::vector<int64_t>& strides);
+  void set_contiguous(bool is_contiguous);
+
+  // Add accessor method for transposed tensors
+  template <typename T>
+  TransposedTensorAccessor<T> transposed_accessor() const;
+
+  // Friend access for the accessor class
+  template <typename T>
+  friend class TransposedTensorAccessor;
+
 private:
   std::unique_ptr<TensorImpl> impl_;
 };
+
+// Class to provide element-wise access to transposed tensors with proper striding
+template <typename T>
+class TransposedTensorAccessor {
+public:
+  TransposedTensorAccessor(const Tensor& tensor) : tensor_(tensor) {}
+
+  // Access elements using row-major indexing but with proper stride handling
+  T operator[](size_t idx) const {
+    if (!tensor_.data_ptr()) {
+      throw std::runtime_error("Cannot access data of uninitialized tensor");
+    }
+
+    // For a 2D transposed tensor (most common case)
+    if (tensor_.dim() == 2) {
+      auto shape = tensor_.shape();
+      int64_t rows = shape[0];
+      int64_t cols = shape[1];
+
+      int64_t row = idx / cols;
+      int64_t col = idx % cols;
+
+      T* data = static_cast<T*>(tensor_.data_ptr());
+      auto strides = tensor_.strides();
+
+      // Use strides to calculate the actual memory offset
+      size_t offset = row * strides[0] + col * strides[1];
+      return data[offset];
+    } else {
+      throw std::runtime_error("Accessor currently only supports 2D tensors");
+    }
+  }
+
+private:
+  const Tensor& tensor_;
+};
+
+// Implementation of the accessor method
+template <typename T>
+TransposedTensorAccessor<T> Tensor::transposed_accessor() const {
+  return TransposedTensorAccessor<T>(*this);
+}
 
 class DType {
 public:

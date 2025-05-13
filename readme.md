@@ -1,4 +1,4 @@
-# 🧠 PyTorch-from-Scratch
+# 🧠 nn-from-Scratch
 
 **PyTorch-from-Scratch** is a minimal deep learning framework built from the ground up to **demystify the internals** of modern machine learning libraries like PyTorch and TensorFlow.  
 It serves as a learning tool, a research sandbox, and a hackable base for experiments.
