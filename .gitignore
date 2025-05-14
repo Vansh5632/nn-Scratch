@@ -77,6 +77,7 @@ install_manifest.txt
 # Test artifacts
 Testing/
 googletest-*/
+test_tensor
 
 # Auto-generated files
 /include/config.h
