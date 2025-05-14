@@ -35,35 +35,31 @@ public:
 private:
   std::vector<Variable*> saved_variables_;
 };
-class AddFunction:public Function{
-    public:
-        std::vector<tensor::Tensor> forward(const std::vector<tensor::Tensor>& inputs) override;
-        std::vector<tensor::Tensor> backward(const std::vector<tensor::Tensor>& grad_outputs) override;
-        std::string name() const override {
-            return "AddFunction";
-        }
+class AddFunction : public Function {
+public:
+  std::vector<tensor::Tensor> forward(const std::vector<tensor::Tensor>& inputs) override;
+  std::vector<tensor::Tensor> backward(const std::vector<tensor::Tensor>& grad_outputs) override;
+  std::string name() const override { return "AddFunction"; }
 };
-class MulFunction:public Function{
-    public:
-        std::vector<tensor::Tensor> forward(const std::vector<tensor::Tensor>& inputs) override;
-        std::vector<tensor::Tensor> backward(const std::vector<tensor::Tensor>& grad_outputs) override;
-        std::string name() const override {
-            return "MulFunction";
-        }
-    private:
-        tensor::Tensor input1_;
-        tensor::Tensor input2_;
+class MulFunction : public Function {
+public:
+  std::vector<tensor::Tensor> forward(const std::vector<tensor::Tensor>& inputs) override;
+  std::vector<tensor::Tensor> backward(const std::vector<tensor::Tensor>& grad_outputs) override;
+  std::string name() const override { return "MulFunction"; }
+
+private:
+  tensor::Tensor input1_;
+  tensor::Tensor input2_;
 };
-class MatMulFunction:public Function{
-    public:
-        std::vector<tensor::Tensor> forward(const std::vector<tensor::Tensor>& inputs) override;
-        std::vector<tensor::Tensor> backward(const std::vector<tensor::Tensor>& grad_outputs) override;
-        std::string name() const override {
-            return "MatMulFunction";
-        }
-    private:
-        tensor::Tensor input1_;
-        tensor::Tensor input2_;
+class MatMulFunction : public Function {
+public:
+  std::vector<tensor::Tensor> forward(const std::vector<tensor::Tensor>& inputs) override;
+  std::vector<tensor::Tensor> backward(const std::vector<tensor::Tensor>& grad_outputs) override;
+  std::string name() const override { return "MatMulFunction"; }
+
+private:
+  tensor::Tensor input1_;
+  tensor::Tensor input2_;
 };
 
 }  // namespace autograd
