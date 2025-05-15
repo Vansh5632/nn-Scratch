@@ -5,71 +5,9 @@
 #include <numeric>
 #include <stdexcept>
 
+#include "core/tensor/tensor_impl.h"
+
 namespace torchscratch::core::tensor {
-
-// Internal implementation struct for Tensor (PImpl idiom)
-struct TensorImpl {
-  void* data_;                    // Raw data pointer
-  std::vector<int64_t> shape_;    // Tensor shape
-  std::vector<int64_t> strides_;  // Strides (bytes between elements)
-  DType* dtype_;                  // Placeholder for data type
-  bool is_contiguous_;            // Contiguity flag
-  bool owns_data_;                // Ownership of data
-
-  TensorImpl(const std::vector<int64_t>& shape, DType* dtype)
-      : data_(nullptr),
-        shape_(shape),
-        strides_(compute_strides(shape)),
-        dtype_(dtype),
-        is_contiguous_(true),
-        owns_data_(true) {}
-
-  // Copy constructor - Create a shallow copy (share data pointer)
-  TensorImpl(const TensorImpl& other)
-      : data_(other.data_),  // Share data pointer (shallow copy)
-        shape_(other.shape_),
-        strides_(other.strides_),
-        dtype_(other.dtype_),
-        is_contiguous_(other.is_contiguous_),
-        owns_data_(false) {  // Mark as non-owning
-    // No deep copy of data
-  }
-
-  ~TensorImpl() {
-    if (owns_data_ && data_) {
-      ::operator delete(data_);
-    }
-  }
-
-  static std::vector<int64_t> compute_strides(const std::vector<int64_t>& shape) {
-    std::vector<int64_t> strides(shape.size(), 0);
-    int64_t stride = 1;  // Assuming element size of 1 byte for now (dtype placeholder)
-    for (int i = shape.size() - 1; i >= 0; --i) {
-      strides[i] = stride;
-      stride *= shape[i];
-    }
-    return strides;
-  }
-
-  // Helper method to get element at specified indices
-  template <typename T>
-  T& get(const std::vector<int64_t>& indices) {
-    size_t offset = 0;
-    for (size_t i = 0; i < indices.size(); ++i) {
-      offset += indices[i] * strides_[i];
-    }
-    return static_cast<T*>(data_)[offset];
-  }
-
-  template <typename T>
-  const T& get(const std::vector<int64_t>& indices) const {
-    size_t offset = 0;
-    for (size_t i = 0; i < indices.size(); ++i) {
-      offset += indices[i] * strides_[i];
-    }
-    return static_cast<const T*>(data_)[offset];
-  }
-};
 
 // Tensor methods
 void Tensor::set_data_ptr(void* data) {
@@ -98,6 +36,7 @@ Tensor::Tensor(const std::vector<int64_t>& shape, DType* dtype) {
 Tensor::Tensor(void* data, const std::vector<int64_t>& shape, DType* dtype) {
   impl_ = std::make_unique<TensorImpl>(shape, dtype);
   impl_->data_ = data;
+  impl_->owns_data_ = false;     // External data ownership
   impl_->is_contiguous_ = true;  // Assume contiguous for externally provided data
 }
 

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.17)
 
 # Project declaration
 project(TorchScratch
@@ -29,7 +29,19 @@ include_directories(
 )
 
 # Create library target
-add_library(torchscratch src/core/tensor/tensor.cpp src/core/tensor/ops.cpp)
+add_library(torchscratch 
+src/core/tensor/tensor.cpp 
+src/core/tensor/ops.cpp 
+src/core/tensor/tensor_impl.cpp
+src/core/autograd/engine.cpp
+)
+
+set(HEADER
+    include/core/tensor/tensor.h
+    include/core/tensor/ops.h
+    include/core/tensor/tensor_impl.h
+    include/core/autograd/function.h
+    include/core/autograd/variable.h)
 
 # Set include directories for the target
 target_include_directories(torchscratch PUBLIC

@@ -7,6 +7,8 @@
 #include <stdexcept>
 #include <vector>
 
+#include "core/tensor/tensor_impl.h"
+
 namespace torchscratch {
 namespace core {
 namespace tensor {
