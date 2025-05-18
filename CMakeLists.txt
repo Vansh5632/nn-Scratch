@@ -17,12 +17,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Include static analyzer options
 include(cmake/StaticAnalyzers.cmake)
 
-# Define header files (for IDE indexing)
-set(HEADERS
-    include/core/tensor/tensor.h
-    # Add other header files here
-)
-
 # Include directories
 include_directories(
     ${CMAKE_SOURCE_DIR}/include
@@ -172,13 +166,21 @@ FetchContent_MakeAvailable(googletest)
 # Test executable
 set(TEST_SOURCES
     test/cpp/tensor/test_tensor.cpp
+    test/cpp/autograd/test_autograd.cpp
 )
 
+# Create separate test executables for tensor and autograd
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test/cpp/tensor/test_tensor.cpp)
-  add_executable(test_tensor ${TEST_SOURCES})
+  add_executable(test_tensor test/cpp/tensor/test_tensor.cpp)
   target_link_libraries(test_tensor torchscratch gtest gtest_main)
-
-  # Enable testing
-  enable_testing()
   add_test(NAME TensorTests COMMAND test_tensor)
 endif()
+
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/test/cpp/autograd/test_autograd.cpp)
+  add_executable(test_autograd test/cpp/autograd/test_autograd.cpp)
+  target_link_libraries(test_autograd torchscratch gtest gtest_main)
+  add_test(NAME AutogradTests COMMAND test_autograd)
+endif()
+
+# Enable testing
+enable_testing()

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iostream>
 #include <queue>
 #include <stdexcept>
 #include <unordered_map>
@@ -107,7 +108,9 @@ Variable::Variable(const tensor::Tensor& data, bool requires_grad)
     grad_.allocate();
     // Initialize gradient to zeros (in a real implementation, we would use a zeros_like function)
     float* grad_ptr = grad_.data_ptr<float>();
-    std::fill(grad_ptr, grad_ptr + grad_.numel(), 0.0f);
+    if (grad_ptr) {
+      std::fill(grad_ptr, grad_ptr + grad_.numel(), 0.0f);
+    }
   }
 }
 
@@ -117,12 +120,17 @@ Variable Variable::detach() const { return Variable(data_, false); }
 class BackwardEngine {
 public:
   static void execute_backward(Variable& root_var) {
-    // Initialize the root gradient to ones if it's a scalar (traditional backprop starting point)
-    if (root_var.shape().empty() || (root_var.numel() == 1)) {
+    // Initialize the root gradient to ones if no gradient is set
+    // This applies to all tensors regardless of shape, as we need to
+    // start the backward pass with a gradient
+    if (!root_var.grad().data_ptr()) {
+      std::cout << "Initializing root gradient to ones" << std::endl;
       tensor::Tensor ones(root_var.shape());
       ones.allocate();
       float* ones_ptr = ones.data_ptr<float>();
-      std::fill(ones_ptr, ones_ptr + ones.numel(), 1.0f);
+      for(int64_t i = 0; i < ones.numel(); ++i) {
+        ones_ptr[i] = 1.0f;
+      }
       root_var.set_grad(ones);
     }
 
@@ -155,7 +163,7 @@ public:
         if (i < grad_inputs.size()) {
           // Accumulate gradients (for variables used multiple times)
           if (input_var->grad().data_ptr()) {
-            // Assuming we have an add operation for tensors
+            // Accumulate gradients by adding to existing ones
             input_var->set_grad(tensor::add(input_var->grad(), grad_inputs[i]));
           } else {
             input_var->set_grad(grad_inputs[i]);
@@ -208,7 +216,11 @@ Variable add(const Variable& a, const Variable& b) {
 
   // Create output variable
   bool requires_grad = a.requires_grad() || b.requires_grad();
-  Variable result(outputs[0], requires_grad);
+  
+  // Ensure the output tensor is properly initialized
+  tensor::Tensor result_tensor = outputs[0];
+  
+  Variable result(result_tensor, requires_grad);
 
   if (requires_grad) {
     // Set gradient function and save inputs for backward pass
@@ -226,7 +238,11 @@ Variable mul(const Variable& a, const Variable& b) {
   auto outputs = func->forward(inputs);
 
   bool requires_grad = a.requires_grad() || b.requires_grad();
-  Variable result(outputs[0], requires_grad);
+  
+  // Ensure the output tensor is properly initialized
+  tensor::Tensor result_tensor = outputs[0];
+  
+  Variable result(result_tensor, requires_grad);
 
   if (requires_grad) {
     result.set_grad_fn(func);
@@ -243,7 +259,11 @@ Variable matmul(const Variable& a, const Variable& b) {
   auto outputs = func->forward(inputs);
 
   bool requires_grad = a.requires_grad() || b.requires_grad();
-  Variable result(outputs[0], requires_grad);
+  
+  // Ensure the output tensor is properly initialized
+  tensor::Tensor result_tensor = outputs[0];
+  
+  Variable result(result_tensor, requires_grad);
 
   if (requires_grad) {
     result.set_grad_fn(func);

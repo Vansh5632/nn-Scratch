@@ -86,7 +86,7 @@ public:
   std::string name() const override { return "MulFunction"; }
 
 private:
-  tensor::Tensor input1_;  // Save inputs for backward pass
+  tensor::Tensor input1_; // Save inputs for backward pass
   tensor::Tensor input2_;
 };
 
@@ -100,12 +100,12 @@ public:
   std::string name() const override { return "MatMulFunction"; }
 
 private:
-  tensor::Tensor input1_;  // Save inputs for backward pass
+  tensor::Tensor input1_; // Save inputs for backward pass
   tensor::Tensor input2_;
 };
 
-}  // namespace autograd
-}  // namespace core
-}  // namespace torchscratch
+} // namespace autograd
+} // namespace core
+} // namespace torchscratch
 
-#endif  // AUTOGRAD_FUNCTION_H
+#endif // AUTOGRAD_FUNCTION_H

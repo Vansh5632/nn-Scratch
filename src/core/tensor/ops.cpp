@@ -108,29 +108,31 @@ Tensor matmul(const Tensor& a, const Tensor& b) {
   return result;
 }
 
-Tensor transpose(const Tensor& a, int64_t dim0, int64_t dim1) {
-  if (!a.data_ptr()) {
-    throw std::runtime_error("Input tensor must have allocated data");
+// Transpose implementation - creates a non-contiguous view
+Tensor transpose(const Tensor& a, int dim0, int dim1) {
+  if (a.dim() < 2) {
+    throw std::runtime_error("Cannot transpose tensor with less than 2 dimensions");
   }
-
+  
   if (dim0 < 0 || dim0 >= a.dim() || dim1 < 0 || dim1 >= a.dim()) {
-    throw std::runtime_error("Invalid dimensions for transpose");
+    throw std::runtime_error("Transpose dimensions out of range");
   }
 
-  auto shape = a.shape();
-  auto strides = a.strides();
-  std::swap(shape[dim0], shape[dim1]);
-
-  // Important: Swap strides to reflect the new memory layout
-  std::swap(strides[dim0], strides[dim1]);
-
-  // Create the transposed tensor
-  Tensor result(shape);
-  result.set_data_ptr(a.data_ptr());  // Shallow copy (view)
-  result.set_strides(strides);
-  result.set_contiguous(false);  // Transpose creates non-contiguous tensor
-
+  // Create a view with swapped shape
+  std::vector<int64_t> out_shape = a.shape();
+  std::swap(out_shape[dim0], out_shape[dim1]);
+  
+  // Create a new tensor that shares the same data
+  Tensor result(a.data_ptr(), out_shape);
+  
+  // Compute the transposed strides
+  std::vector<int64_t> transposed_strides = a.strides();
+  std::swap(transposed_strides[dim0], transposed_strides[dim1]);
+  
+  // Set the custom strides and mark as non-contiguous
+  result.set_strides(transposed_strides);
+  result.set_contiguous(false);
+  
   return result;
 }
-
-}  // namespace torchscratch::core::tensor
+}
