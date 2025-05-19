@@ -128,7 +128,7 @@ public:
       tensor::Tensor ones(root_var.shape());
       ones.allocate();
       float* ones_ptr = ones.data_ptr<float>();
-      for(int64_t i = 0; i < ones.numel(); ++i) {
+      for (int64_t i = 0; i < ones.numel(); ++i) {
         ones_ptr[i] = 1.0f;
       }
       root_var.set_grad(ones);
@@ -216,10 +216,10 @@ Variable add(const Variable& a, const Variable& b) {
 
   // Create output variable
   bool requires_grad = a.requires_grad() || b.requires_grad();
-  
+
   // Ensure the output tensor is properly initialized
   tensor::Tensor result_tensor = outputs[0];
-  
+
   Variable result(result_tensor, requires_grad);
 
   if (requires_grad) {
@@ -238,10 +238,10 @@ Variable mul(const Variable& a, const Variable& b) {
   auto outputs = func->forward(inputs);
 
   bool requires_grad = a.requires_grad() || b.requires_grad();
-  
+
   // Ensure the output tensor is properly initialized
   tensor::Tensor result_tensor = outputs[0];
-  
+
   Variable result(result_tensor, requires_grad);
 
   if (requires_grad) {
@@ -259,10 +259,10 @@ Variable matmul(const Variable& a, const Variable& b) {
   auto outputs = func->forward(inputs);
 
   bool requires_grad = a.requires_grad() || b.requires_grad();
-  
+
   // Ensure the output tensor is properly initialized
   tensor::Tensor result_tensor = outputs[0];
-  
+
   Variable result(result_tensor, requires_grad);
 
   if (requires_grad) {
