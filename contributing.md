@@ -1,172 +1,171 @@
-# Contributing to nn-from-Scratch
+# Contributing to TorchScratch
 
-Thank you for considering contributing to PyTorch-from-Scratch! This document outlines the process for contributing to this project and helps you get started.
+Thank you for your interest in contributing to TorchScratch! This document provides guidelines and instructions to help you get started.
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
+- [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Development Environment Setup](#development-environment-setup)
-- [Development Workflow](#development-workflow)
+  - [Development Environment](#development-environment)
   - [Building the Project](#building-the-project)
+  - [Running Tests](#running-tests)
+- [How to Contribute](#how-to-contribute)
+  - [Reporting Bugs](#reporting-bugs)
+  - [Suggesting Features](#suggesting-features)
+  - [Pull Requests](#pull-requests)
+- [Development Guidelines](#development-guidelines)
+  - [C++ Style Guide](#c-style-guide)
+  - [Python Style Guide](#python-style-guide)
+  - [Documentation](#documentation)
   - [Testing](#testing)
-  - [Code Quality Tools](#code-quality-tools)
-- [Pull Request Process](#pull-request-process)
-- [Coding Standards](#coding-standards)
 - [Project Structure](#project-structure)
-- [License](#license)
 
-## Project Overview
+## Code of Conduct
 
-PyTorch-from-Scratch is a minimal deep learning framework built from the ground up to demystify the internals of modern machine learning libraries like PyTorch and TensorFlow. The project includes both a C++ core library and Python bindings to provide a PyTorch-like API.
+By participating in this project, you agree to maintain a respectful and inclusive environment for everyone. Please be kind, patient, and considerate of others.
 
 ## Getting Started
 
-### Prerequisites
+### Development Environment
 
-To contribute to this project, you'll need:
+#### Prerequisites
 
-- **C++ Compiler** (GCC 7+ or Clang 5+)
-- **CMake** (3.14+)
-- **Python** (3.7+)
-- **Git**
+- CMake (3.17 or higher)
+- C++ compiler with C++14 support (GCC 7+, Clang 5+, MSVC 19.14+)
+- Python 3.7 or higher
+- NumPy
 
-Additional tools:
-- **clang-format** (for code formatting)
-- **clang-tidy** (for static analysis)
-- **cppcheck** (for additional static analysis)
+#### Setup
 
-### Development Environment Setup
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/torchscratch.git
+   cd torchscratch
+   ```
 
-1. **Clone the repository**
+2. **Create a virtual environment** (recommended):
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-```bash
-git clone https://github.com/yourusername/pytorch-from-scratch.git
-cd pytorch-from-scratch
-```
-
-2. **Install dependencies**
-
-On Ubuntu/Debian:
-```bash
-sudo apt-get update
-sudo apt-get install -y build-essential cmake python3-dev python3-pip clang-format clang-tidy cppcheck
-pip3 install -r requirements-dev.txt
-```
-
-## Development Workflow
+3. **Install development dependencies**:
+   ```bash
+   pip install -e ".[dev]"
+   ```
 
 ### Building the Project
 
-We provide a helper script to build the project with common configurations:
+#### Option 1: Using the build script
+
+The quickest way to build the project is to use the provided build script:
 
 ```bash
-# One-command build
 ./scripts/build.sh
 ```
 
-Or manually with CMake:
+#### Option 2: Manual build
 
 ```bash
-mkdir -p build && cd build
+mkdir -p build
+cd build
 cmake ..
-make -j$(nproc)
+make
 ```
+
+#### Option 3: Development installation
+
+For Python development, you can install the package in development mode:
+
+```bash
+pip install -e .
+```
+
+### Running Tests
+
+#### C++ Tests
+
+```bash
+cd build
+ctest
+```
+
+Or run specific test executables:
+
+```bash
+./test_tensor
+./test_autograd
+```
+
+#### Python Tests
+
+```bash
+pytest
+```
+
+## How to Contribute
+
+### Reporting Bugs
+
+If you find a bug, please create an issue with the following information:
+
+- A clear, descriptive title
+- Steps to reproduce the issue
+- Expected behavior
+- Actual behavior
+- Environment information (OS, compiler version, Python version, etc.)
+
+### Suggesting Features
+
+Feature requests are welcome! Please include:
+
+- A clear description of the feature
+- The motivation and use case for the feature
+- Any implementation ideas you may have
+
+### Pull Requests
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/my-feature`
+3. **Make your changes**
+4. **Run tests and linting**: Make sure your changes pass all existing tests and follow the code style
+5. **Commit your changes**: Use meaningful commit messages
+6. **Push to your fork**: `git push origin feature/my-feature`
+7. **Create a pull request**: Provide a clear description of your changes
+
+## Development Guidelines
+
+### C++ Style Guide
+
+- Use C++14 features
+- Follow the Google C++ style guide with some modifications
+- Run clang-format before committing: `./scripts/format_cpp.sh`
+- Use `snake_case` for variable and function names
+- Use `PascalCase` for class names
+
+### Python Style Guide
+
+- Follow PEP 8
+- Use type hints where appropriate
+- Maximum line length: 88 characters (compatible with black formatter)
+- Use docstrings for all public functions, classes, and methods
+
+### Documentation
+
+- Document all public APIs
+- Include examples where appropriate
+- Update the documentation when modifying code
 
 ### Testing
 
-To run C++ tests:
-
-```bash
-# From the build directory
-ctest --verbose
-# Or directly
-./build/test_tensor
-```
-
-To run Python tests:
-
-```bash
-python -m pytest python/tests
-```
-
-### All-in-One Development Script
-
-For convenience, we've provided a script to handle building, testing, and code quality checks:
-
-```bash
-./scripts/dev.sh
-```
-
-### Code Quality Tools
-
-Format your code:
-
-```bash
-# Format C++ code
-make format
-# Or directly
-./scripts/format_cpp.sh
-```
-
-Run linters:
-
-```bash
-# Lint C++ code
-make lint
-# Or directly
-./scripts/lint_cpp.sh
-```
-
-## Pull Request Process
-
-1. **Fork the repository** on GitHub
-2. **Create a new branch** for your feature or bugfix
-3. **Commit your changes** with clear commit messages
-4. **Run tests and linters** to ensure code quality
-5. **Submit a pull request** against the `main` branch
-6. **Update the documentation** as needed
-
-## Coding Standards
-
-- **C++**: Follow the project's style guide as enforced by clang-format
-  - Use C++14 features
-  - Include documentation for public APIs
-  - Follow the Google C++ Style Guide with project-specific modifications
-  
-- **Python**: Follow PEP 8 with these guidelines:
-  - Use 4 spaces for indentation
-  - Maximum line length of 88 characters (Black formatter)
-  - Docstrings in Google style
+- Write tests for all new features
+- Ensure all tests pass before submitting a pull request
+- Aim for high test coverage
 
 ## Project Structure
 
-```
-pytorch-from-scratch/
-├── cmake/                     # CMake configuration files
-├── include/                   # Public C++ headers
-│   └── core/
-│       ├── tensor/           # Tensor core implementation
-│       ├── autograd/         # Autograd components
-│       └── nn/               # Neural network components
-├── src/                       # C++ implementation
-│   ├── core/
-│   │   ├── tensor/
-│   │   ├── autograd/
-│   │   └── nn/
-│   └── python/               # Python binding sources
-├── python/                    # Python package
-│   └── torchscratch/
-├── test/                      # Comprehensive tests
-│   ├── cpp/
-│   └── python/
-├── scripts/                   # Maintenance scripts
-├── examples/                  # Example projects
-└── docs/                      # Documentation
-```
+Please see the [README.md](README.md) for an overview of the project structure.
 
-## License
+## Thank You!
 
-By contributing to PyTorch-from-Scratch, you agree that your contributions will be licensed under the project's [MIT License](LICENSE).
-```
+Your contributions help make TorchScratch better. We appreciate your time and effort!

@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+# Add any dependencies that torchscratch needs here
+# find_dependency(Dependency REQUIRED)
+
+# Import the targets
+include("${CMAKE_CURRENT_LIST_DIR}/torchscratch-targets.cmake")

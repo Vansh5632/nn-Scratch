@@ -2,6 +2,8 @@
 /build/
 /cmake-build-*/
 /out/
+/bin/
+/lib/
 
 # Compilation database
 compile_commands.json
@@ -44,6 +46,14 @@ htmlcov/
 .nox/
 .hypothesis/
 .python-version
+*.cpython-*-linux-gnu.so
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.env/
+.venv/
 
 # C++ compiled files
 *.o
@@ -64,12 +74,12 @@ htmlcov/
 # Dependency directories
 /third_party/build/
 /third_party/downloads/
+/_deps/
 
 # Logs and debugging
 *.log
 *.dSYM/
 gmon.out
-
 
 # Installation artifacts
 install_manifest.txt
@@ -78,6 +88,7 @@ install_manifest.txt
 Testing/
 googletest-*/
 test_tensor
+test_autograd
 
 # Auto-generated files
 /include/config.h
@@ -101,6 +112,7 @@ cmake_install.cmake
 CTestTestfile.cmake
 Makefile
 CMakeSettings.json
+*.cmake
 
 # Linting and formatting backups
 *.orig
@@ -162,3 +174,14 @@ benchmark_results/
 googletest-download/
 googletest-src/
 googletest-build/
+
+# Project specific
+/_deps/
+*.cpython-*-linux-gnu.so
+/reports/cppcheck_report.txt
+/reports/*.txt
+libtorchscratch.a
+
+# Exceptions - files that should be tracked regardless of patterns above
+!cmake/*.cmake
+!cmake/StaticAnalyzers.cmake
