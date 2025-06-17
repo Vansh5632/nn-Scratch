@@ -63,6 +63,10 @@ add_library(torchscratch
     src/core/tensor/ops.cpp 
     src/core/tensor/tensor_impl.cpp
     src/core/autograd/engine.cpp
+    src/core/nn/linear.cpp
+    src/core/nn/activation.cpp
+    src/core/nn/loss.cpp
+    src/core/optim/sgd.cpp
 )
 
 # Explicitly set Position Independent Code for the library
@@ -93,6 +97,8 @@ target_compile_options(torchscratch PRIVATE
 pybind11_add_module(torchscratch_cpp
     src/python/module.cpp
     src/python/tensor.cpp
+    src/python/nn.cpp
+    src/python/optim.cpp
 )
 target_link_libraries(torchscratch_cpp PRIVATE torchscratch)
 

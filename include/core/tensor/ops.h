@@ -10,6 +10,9 @@ namespace torchscratch::core::tensor {
 // Addition: Element-wise addition of two tensors
 Tensor add(const Tensor& a, const Tensor& b);
 
+// Subtraction: Element-wise subtraction of two tensors
+Tensor sub(const Tensor& a, const Tensor& b);
+
 // Multiplication: Element-wise multiplication of two tensors
 Tensor mul(const Tensor& a, const Tensor& b);
 

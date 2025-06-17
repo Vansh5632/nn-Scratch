@@ -23,22 +23,36 @@ from torchscratch_cpp import (
     Tensor,
     Variable,
     add,
+    sub,
     mul,
     matmul,
     transpose,
+    tensor,
 )
 
 # Import submodules
 from . import nn
 from . import optim
 
+# Add no_grad context manager
+class no_grad:
+    """Context manager for disabling gradient computation"""
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
 __all__ = [
     "Tensor",
     "Variable",
     "add",
+    "sub",
     "mul",
     "matmul",
     "transpose",
+    "tensor",
+    "no_grad",
     "nn",
     "optim",
 ]

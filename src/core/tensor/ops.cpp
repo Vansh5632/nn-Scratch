@@ -25,6 +25,27 @@ Tensor add(const Tensor& a, const Tensor& b) {
     return result;
   }
 
+  // Handle broadcasting for bias addition (2D + 1D case)
+  // a: [batch_size, features], b: [features]
+  if (a.dim() == 2 && b.dim() == 1 && a.shape()[1] == b.shape()[0]) {
+    Tensor result(a.shape());
+    result.allocate();
+    
+    float* a_data = a.data_ptr<float>();
+    float* b_data = b.data_ptr<float>();
+    float* result_data = result.data_ptr<float>();
+    
+    int64_t batch_size = a.shape()[0];
+    int64_t features = a.shape()[1];
+    
+    for (int64_t i = 0; i < batch_size; ++i) {
+      for (int64_t j = 0; j < features; ++j) {
+        result_data[i * features + j] = a_data[i * features + j] + b_data[j];
+      }
+    }
+    return result;
+  }
+
   // Regular element-wise addition
   if (a.shape() != b.shape()) {
     throw std::runtime_error("Tensor shapes must match for addition");
@@ -132,6 +153,45 @@ Tensor transpose(const Tensor& a, int dim0, int dim1) {
   // Set the custom strides and mark as non-contiguous
   result.set_strides(transposed_strides);
   result.set_contiguous(false);
+
+  return result;
+}
+
+Tensor sub(const Tensor& a, const Tensor& b) {
+  // Basic element-wise subtraction
+  if (!a.data_ptr() || !b.data_ptr()) {
+    throw std::runtime_error("Input tensors must have allocated data");
+  }
+
+  // Handle broadcasting for scalar case
+  if (b.numel() == 1) {
+    Tensor result(a.shape());
+    result.allocate();
+    float scalar = *b.data_ptr<float>();
+    float* a_data = a.data_ptr<float>();
+    float* result_data = result.data_ptr<float>();
+
+    for (int i = 0; i < a.numel(); ++i) {
+      result_data[i] = a_data[i] - scalar;
+    }
+    return result;
+  }
+
+  // Regular element-wise subtraction
+  if (a.shape() != b.shape()) {
+    throw std::runtime_error("Tensor shapes must match for subtraction");
+  }
+
+  Tensor result(a.shape());
+  result.allocate();
+
+  float* a_data = a.data_ptr<float>();
+  float* b_data = b.data_ptr<float>();
+  float* result_data = result.data_ptr<float>();
+
+  for (int i = 0; i < a.numel(); ++i) {
+    result_data[i] = a_data[i] - b_data[i];
+  }
 
   return result;
 }

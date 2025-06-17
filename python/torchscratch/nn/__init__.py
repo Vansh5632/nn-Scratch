@@ -11,13 +11,8 @@ except ImportError:
     # If nn components aren't yet implemented in C++, we'll use Python implementations
     pass
 
-# Import Python implementations (these will override any C++ implementations with the same name)
-# from .linear import Linear
-# from .activation import ReLU, Sigmoid, Tanh
-# from .loss import MSELoss, CrossEntropyLoss
-
 __all__ = [
-    # "Linear",
-    # "ReLU", "Sigmoid", "Tanh",
-    # "MSELoss", "CrossEntropyLoss"
+    "Linear",
+    "relu", "sigmoid", "tanh",
+    "mse_loss", "binary_cross_entropy_loss", "cross_entropy_loss"
 ]
