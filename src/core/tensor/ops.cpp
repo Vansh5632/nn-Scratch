@@ -30,14 +30,14 @@ Tensor add(const Tensor& a, const Tensor& b) {
   if (a.dim() == 2 && b.dim() == 1 && a.shape()[1] == b.shape()[0]) {
     Tensor result(a.shape());
     result.allocate();
-    
+
     float* a_data = a.data_ptr<float>();
     float* b_data = b.data_ptr<float>();
     float* result_data = result.data_ptr<float>();
-    
+
     int64_t batch_size = a.shape()[0];
     int64_t features = a.shape()[1];
-    
+
     for (int64_t i = 0; i < batch_size; ++i) {
       for (int64_t j = 0; j < features; ++j) {
         result_data[i * features + j] = a_data[i * features + j] + b_data[j];

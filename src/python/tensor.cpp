@@ -88,40 +88,46 @@ void init_tensor(py::module& m) {
         py::arg("dim0") = 0, py::arg("dim1") = 1);
 
   // Tensor creation functions
-  m.def("tensor", [](py::list data, bool requires_grad = false) {
-    // Convert Python list to tensor
-    std::function<void(const py::list&, std::vector<float>&, std::vector<int64_t>&)> parse_nested_list;
-    parse_nested_list = [&](const py::list& lst, std::vector<float>& values, std::vector<int64_t>& shape) {
-      if (shape.empty()) {
-        shape.push_back(lst.size());
-      }
-      
-      for (size_t i = 0; i < lst.size(); ++i) {
-        if (py::isinstance<py::list>(lst[i])) {
-          if (i == 0) {
-            shape.push_back(py::cast<py::list>(lst[i]).size());
+  m.def(
+      "tensor",
+      [](py::list data, bool requires_grad = false) {
+        // Convert Python list to tensor
+        std::function<void(const py::list&, std::vector<float>&, std::vector<int64_t>&)>
+            parse_nested_list;
+        parse_nested_list = [&](const py::list& lst, std::vector<float>& values,
+                                std::vector<int64_t>& shape) {
+          if (shape.empty()) {
+            shape.push_back(lst.size());
           }
-          parse_nested_list(py::cast<py::list>(lst[i]), values, shape);
-        } else {
-          values.push_back(py::cast<float>(lst[i]));
+
+          for (size_t i = 0; i < lst.size(); ++i) {
+            if (py::isinstance<py::list>(lst[i])) {
+              if (i == 0) {
+                shape.push_back(py::cast<py::list>(lst[i]).size());
+              }
+              parse_nested_list(py::cast<py::list>(lst[i]), values, shape);
+            } else {
+              values.push_back(py::cast<float>(lst[i]));
+            }
+          }
+        };
+
+        std::vector<float> values;
+        std::vector<int64_t> shape;
+        parse_nested_list(data, values, shape);
+
+        ts::core::tensor::Tensor tensor(shape);
+        tensor.allocate();
+
+        float* tensor_data = tensor.data_ptr<float>();
+        for (size_t i = 0; i < values.size(); ++i) {
+          tensor_data[i] = values[i];
         }
-      }
-    };
-    
-    std::vector<float> values;
-    std::vector<int64_t> shape;
-    parse_nested_list(data, values, shape);
-    
-    ts::core::tensor::Tensor tensor(shape);
-    tensor.allocate();
-    
-    float* tensor_data = tensor.data_ptr<float>();
-    for (size_t i = 0; i < values.size(); ++i) {
-      tensor_data[i] = values[i];
-    }
-    
-    return ts::core::autograd::Variable(tensor, requires_grad);
-  }, py::arg("data"), py::arg("requires_grad") = false, "Create a tensor from nested Python lists");
+
+        return ts::core::autograd::Variable(tensor, requires_grad);
+      },
+      py::arg("data"), py::arg("requires_grad") = false,
+      "Create a tensor from nested Python lists");
 
   // Define Variable class for autograd
   py::class_<ts::core::autograd::Variable>(m, "Variable")
@@ -132,15 +138,15 @@ void init_tensor(py::module& m) {
       .def("requires_grad", &ts::core::autograd::Variable::requires_grad)
       .def("backward", &ts::core::autograd::Variable::backward)
       .def("detach", &ts::core::autograd::Variable::detach)
-      .def("shape", [](const ts::core::autograd::Variable& var) {
-        return var.data().shape();
-      })
-      .def("item", [](const ts::core::autograd::Variable& var) {
-        if (var.data().numel() != 1) {
-          throw std::runtime_error("item() can only be called on tensors with a single element");
-        }
-        return var.data().data_ptr<float>()[0];
-      })
+      .def("shape", [](const ts::core::autograd::Variable& var) { return var.data().shape(); })
+      .def("item",
+           [](const ts::core::autograd::Variable& var) {
+             if (var.data().numel() != 1) {
+               throw std::runtime_error(
+                   "item() can only be called on tensors with a single element");
+             }
+             return var.data().data_ptr<float>()[0];
+           })
       .def("__repr__", [](const ts::core::autograd::Variable& var) {
         std::stringstream ss;
         ss << "Variable(";
